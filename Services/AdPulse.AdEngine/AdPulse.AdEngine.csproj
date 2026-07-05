@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\AdPulse.Core.AdEngine.Abstractions\AdPulse.Core.AdEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\AdPulse.Core.Domain\AdPulse.Core.Domain.csproj" />
+    <ProjectReference Include="..\..\Core\AdPulse.Core.Domain.Targeting\AdPulse.Core.Domain.Targeting.csproj" />
+    <ProjectReference Include="..\..\Core\AdPulse.Core.Shared\AdPulse.Core.Shared.csproj" />
+    <ProjectReference Include="..\..\Strategies\AdPulse.Strategies.Targeting\AdPulse.Strategies.Targeting.fsproj" />
+  </ItemGroup>
+
+</Project>
