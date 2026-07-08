@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>FS0025</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Core/TargetingTypes.fs" />
+    <Compile Include="Core/MatchingAlgorithms.fs" />
+    <Compile Include="Utils/DataValidation.fs" />
+    <Compile Include="Utils/CacheHelpers.fs" />
+    <Compile Include="Utils/WeightConfiguration.fs" />
+    <Compile Include="Utils/MetricsCollector.fs" />
+  <Compile Include="Utils/DeviceNormalization.fs" />
+  <Compile Include="Utils/TimePrecomputeCache.fs" />
+  <Compile Include="Utils/HolidayProvider.fs" />
+    <Compile Include="Matchers/DemographicMatcher.fs" />
+    <Compile Include="Matchers/GeoLocationMatcher.fs" />
+  <Compile Include="Matchers/TimeTargetingMatcher.fs" />
+  <Compile Include="Matchers/DeviceTargetingMatcher.fs" />
+  <Compile Include="Matchers/UserInterestMatcher.fs" />
+  <Compile Include="Matchers/UserBehaviorMatcher.fs" />
+  <Compile Include="Matchers/UserPreferenceMatcher.fs" />
+  <Compile Include="Matchers/UserTagMatcher.fs" />
+  <Compile Include="Matchers/UserValueMatcher.fs" />
+    <Compile Include="Interop/TypeConverters.fs" />
+    <Compile Include="Interop/CSharpInterop.fs" />
+    <Compile Include="Library.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Collections.ParallelSeq" Version="1.2.0" />
+    <PackageReference Include="FSharp.Data" Version="6.4.0" />
+    <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
+    <PackageReference Include="MathNet.Numerics.FSharp" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\AdPulse.Core.AdEngine.Abstractions\AdPulse.Core.AdEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\AdPulse.Core.Domain\AdPulse.Core.Domain.csproj" />
+    <ProjectReference Include="..\..\Core\AdPulse.Core.Domain.Targeting\AdPulse.Core.Domain.Targeting.csproj" />
+    <ProjectReference Include="..\..\Core\AdPulse.Core.Shared\AdPulse.Core.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
