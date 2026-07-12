@@ -402,7 +402,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - GitHub: [@rakinmohammedrafeeq](https://github.com/rakinmohammedrafeeq)
 - LinkedIn: [Rakin Mohammed Rafeeq](https://linkedin.com/in/rakinmohammedrafeeq)
 - Email: rakinmohammedrafeeq@gmail.com
-- Portfolio: [Your Portfolio URL]
+- Portfolio: [rakinmohammedrafeeq.vercel.app](https://rakinmohammedrafeeq.vercel.app)
 
 ---
 
@@ -428,17 +428,6 @@ This project showcases:
 - Cloud-native application design
 
 **Built with** ❤️ **using .NET, Vue.js, Node.js, and modern cloud technologies.**
-
----
-
-## 📊 Project Stats
-
-- **Project Duration**: July 2026 - August 2026 (2 months)
-- **Team Size**: 1 (Solo Project)
-- **Lines of Code**: 50,000+
-- **Test Coverage**: >80%
-- **Technologies Used**: 15+
-- **Architecture**: Microservices, Event-Driven, Multi-Tenant
 
 ---
 
