@@ -1,109 +1,65 @@
-const express = require('express');
+import express from 'express';
+import { validateEvent } from '../validators/eventValidator.js';
+import { processEvent, processBatchEvents } from '../services/eventProcessor.js';
+import logger from '../config/logger.js';
+
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
-const logger = require('../utils/logger');
 
-// POST /api/events/impression - Track ad impression
-router.post('/impression', async (req, res) => {
+/**
+ * POST /events - Ingest a single event
+ */
+router.post('/', async (req, res, next) => {
   try {
-    const { campaignId, adId, userId, timestamp } = req.body;
+    // Validate event
+    const validation = validateEvent(req.body, false);
     
-    const eventId = uuidv4();
-    const impressionEvent = {
-      eventId,
-      eventType: 'impression',
-      campaignId,
-      adId,
-      userId,
-      timestamp: timestamp || new Date().toISOString(),
-      metadata: {
-        userAgent: req.headers['user-agent'],
-        ip: req.ip,
-        referer: req.headers.referer
-      }
-    };
+    if (!validation.valid) {
+      return res.status(400).json({
+        error: 'Validation Error',
+        errors: validation.errors
+      });
+    }
 
-    // TODO: Push to Redis queue for processing
-    logger.info(`Impression event recorded: ${eventId}`);
+    // Process event
+    const event = await processEvent(validation.value);
 
-    res.status(201).json({
-      success: true,
-      eventId,
-      message: 'Impression tracked successfully'
+    res.status(202).json({
+      message: 'Event accepted for processing',
+      eventId: event.id
     });
   } catch (error) {
-    logger.error('Error tracking impression:', error);
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 
-// POST /api/events/click - Track ad click
-router.post('/click', async (req, res) => {
+/**
+ * POST /events/batch - Ingest multiple events
+ */
+router.post('/batch', async (req, res, next) => {
   try {
-    const { campaignId, adId, userId, timestamp } = req.body;
+    // Validate batch
+    const validation = validateEvent(req.body, true);
     
-    const eventId = uuidv4();
-    const clickEvent = {
-      eventId,
-      eventType: 'click',
-      campaignId,
-      adId,
-      userId,
-      timestamp: timestamp || new Date().toISOString(),
-      metadata: {
-        userAgent: req.headers['user-agent'],
-        ip: req.ip,
-        referer: req.headers.referer
-      }
-    };
+    if (!validation.valid) {
+      return res.status(400).json({
+        error: 'Validation Error',
+        errors: validation.errors
+      });
+    }
 
-    // TODO: Push to Redis queue for processing
-    logger.info(`Click event recorded: ${eventId}`);
+    // Process batch
+    const results = await processBatchEvents(validation.value.events);
 
-    res.status(201).json({
-      success: true,
-      eventId,
-      message: 'Click tracked successfully'
+    res.status(202).json({
+      message: 'Batch events accepted for processing',
+      total: validation.value.events.length,
+      successful: results.successful,
+      failed: results.failed,
+      errors: results.errors
     });
   } catch (error) {
-    logger.error('Error tracking click:', error);
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 
-// POST /api/events/conversion - Track conversion
-router.post('/conversion', async (req, res) => {
-  try {
-    const { campaignId, adId, userId, conversionValue, timestamp } = req.body;
-    
-    const eventId = uuidv4();
-    const conversionEvent = {
-      eventId,
-      eventType: 'conversion',
-      campaignId,
-      adId,
-      userId,
-      conversionValue: conversionValue || 0,
-      timestamp: timestamp || new Date().toISOString(),
-      metadata: {
-        userAgent: req.headers['user-agent'],
-        ip: req.ip,
-        referer: req.headers.referer
-      }
-    };
-
-    // TODO: Push to Redis queue for processing
-    logger.info(`Conversion event recorded: ${eventId} - Value: ${conversionValue}`);
-
-    res.status(201).json({
-      success: true,
-      eventId,
-      message: 'Conversion tracked successfully'
-    });
-  } catch (error) {
-    logger.error('Error tracking conversion:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-module.exports = router;
+export default router;
