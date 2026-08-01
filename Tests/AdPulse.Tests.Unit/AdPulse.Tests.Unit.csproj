@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -19,31 +19,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\AdPulse.Core.AdEngine.Abstractions\AdPulse.Core.AdEngine.Abstractions.csproj" />
     <ProjectReference Include="..\..\Core\AdPulse.Core.Domain\AdPulse.Core.Domain.csproj" />
     <ProjectReference Include="..\..\Core\AdPulse.Core.Shared\AdPulse.Core.Shared.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\AdPulse.Infrastructure.DependencyInjection\AdPulse.Infrastructure.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\Strategies\AdPulse.Strategies.Targeting\AdPulse.Strategies.Targeting.fsproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="appsettings.test.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\Services\AdPulse.API\AdPulse.API.csproj" />
   </ItemGroup>
 
 </Project>
