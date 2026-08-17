@@ -1,0 +1,60 @@
+# Future Kubernetes Deployment Template for AdPulse Node.js Event Ingestion
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adpulse-event-ingestion
+  namespace: adpulse
+  labels:
+    app: adpulse-event-ingestion
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: adpulse-event-ingestion
+  template:
+    metadata:
+      labels:
+        app: adpulse-event-ingestion
+    spec:
+      containers:
+      - name: event-ingestion
+        image: adpulse-event-ingestion:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001
+        envFrom:
+        - configMapRef:
+            name: adpulse-config
+        env:
+        - name: REDIS_HOST
+          value: "adpulse-redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: API_BASE_URL
+          value: "http://adpulse-api:5000"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adpulse-event-ingestion
+  namespace: adpulse
+spec:
+  selector:
+    app: adpulse-event-ingestion
+  ports:
+  - port: 3001
+    targetPort: 3001
+  type: ClusterIP

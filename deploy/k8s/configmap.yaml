@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adpulse-config
+  namespace: adpulse
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  JWT_ISSUER: "AdPulse"
+  JWT_AUDIENCE: "AdPulse.API"
+  API_BASE_URL: "http://adpulse-api:5000"
+  EVENT_SERVICE_PORT: "3001"
+  ELASTICSEARCH_INDEX_PREFIX: "adpulse"

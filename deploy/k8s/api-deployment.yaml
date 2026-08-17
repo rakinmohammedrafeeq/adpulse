@@ -1,0 +1,70 @@
+# Future Kubernetes Deployment Template for AdPulse ASP.NET Core API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adpulse-api
+  namespace: adpulse
+  labels:
+    app: adpulse-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: adpulse-api
+  template:
+    metadata:
+      labels:
+        app: adpulse-api
+    spec:
+      containers:
+      - name: api
+        image: adpulse-api:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: adpulse-config
+        env:
+        - name: CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: adpulse-secrets
+              key: connection-string
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: adpulse-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adpulse-api
+  namespace: adpulse
+spec:
+  selector:
+    app: adpulse-api
+  ports:
+  - port: 5000
+    targetPort: 5000
+  type: ClusterIP

@@ -1,0 +1,44 @@
+# Future Kubernetes Deployment Template for AdPulse Vue.js Frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adpulse-frontend
+  namespace: adpulse
+  labels:
+    app: adpulse-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: adpulse-frontend
+  template:
+    metadata:
+      labels:
+        app: adpulse-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: adpulse-frontend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adpulse-frontend
+  namespace: adpulse
+spec:
+  selector:
+    app: adpulse-frontend
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer
