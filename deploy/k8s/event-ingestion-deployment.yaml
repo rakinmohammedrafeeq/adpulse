@@ -1,4 +1,7 @@
 # Future Kubernetes Deployment Template for AdPulse Node.js Event Ingestion
+# Target: Azure Kubernetes Service (AKS) or Azure Container Apps
+# Images should be sourced from Azure Container Registry (ACR): <registry>.azurecr.io/adpulse-event-ingestion:latest
+# Redis connection should point to Azure Cache for Redis in cloud deployments
 apiVersion: apps/v1
 kind: Deployment
 metadata:

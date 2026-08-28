@@ -1,4 +1,7 @@
 # Future Kubernetes Deployment Template for AdPulse ASP.NET Core API
+# Target: Azure Kubernetes Service (AKS) or Azure Container Apps
+# Images should be sourced from Azure Container Registry (ACR): <registry>.azurecr.io/adpulse-api:latest
+# Secrets should reference Azure Key Vault via Secrets Store CSI Driver or AKS-managed identity
 apiVersion: apps/v1
 kind: Deployment
 metadata:

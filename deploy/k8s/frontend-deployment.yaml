@@ -1,4 +1,7 @@
 # Future Kubernetes Deployment Template for AdPulse Vue.js Frontend
+# Target: Azure Kubernetes Service (AKS)
+# Alternative (recommended): Deploy the built static assets to Azure Blob Storage + Azure Front Door (CDN)
+# Images should be sourced from Azure Container Registry (ACR): <registry>.azurecr.io/adpulse-frontend:latest
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -29,8 +29,8 @@
 ### 📌 Operational Deployment Notice
 **AdPulse is a fully working, real, local-first full-stack platform** engineered for laptop demonstrations, technical interviews, and architectural reviews.
 - **Local Execution:** 100% runnable offline on Docker Compose, .NET 9, Node.js, and modern browsers.
-- **Zero Active Cloud Dependencies:** No active infrastructure is deployed to AWS, Azure, or Kubernetes.
-- **AWS-Ready Cloud Roadmap:** Modular, containerized services prepared for direct transition to Amazon ECS Fargate, Aurora, ElastiCache, and OpenSearch.
+- **Zero Active Cloud Dependencies:** No active infrastructure is deployed to any cloud platform.
+- **Cloud-Ready Architecture:** AdPulse is designed primarily for local development and demonstration. Its containerized architecture and environment-based configuration keep it suitable for future deployment to Azure or other cloud platforms.
 
 </div>
 
@@ -53,9 +53,9 @@
   - [11. Relational Database Schema & Domain Model](#11-relational-database-schema--domain-model)
   - [12. Frontend Design System & Real-Time Dashboard](#12-frontend-design-system--real-time-dashboard)
   - [13. Centralized Structured Logging & Observability](#13-centralized-structured-logging--observability)
-- [PART III: Future Cloud Readiness (AWS Target Architecture)](#part-iii-future-cloud-readiness-aws-target-architecture)
-  - [14. AWS Production Deployment Architecture](#14-aws-production-deployment-architecture)
-  - [15. Infrastructure as Code & Container Strategy](#15-infrastructure-as-code--container-strategy)
+- [PART III: Future Cloud Readiness (Azure Target Architecture)](#part-iii-future-cloud-readiness-azure-target-architecture)
+  - [14. Azure Deployment Architecture](#14-azure-deployment-architecture)
+  - [15. Infrastructure as Code &amp; Container Strategy](#15-infrastructure-as-code--container-strategy)
 - [PART IV: Operational Guide & Verification Handbook](#part-iv-operational-guide--verification-handbook)
   - [16. Prerequisites Checklist](#16-prerequisites-checklist)
   - [17. Service Directory & Port Directory](#17-service-directory--port-directory)
@@ -412,50 +412,73 @@ The dashboard is built on **Vue 3, TypeScript, Vite, Pinia, and Element Plus**, 
 
 ---
 
-# PART III: Future Cloud Readiness (AWS Target Architecture)
+# PART III: Future Cloud Readiness (Azure Target Architecture)
 
-AdPulse is built local-first, but its modular Docker boundaries align with **Amazon Web Services (AWS)** primitives for future migration:
+AdPulse is built local-first, but its modular Docker boundaries align with **Microsoft Azure** primitives for future migration:
 
 ```
                                     [Internet / Mobile / Web Clients]
                                                    │
                                                    ▼
-                                  [AWS CloudFront (CDN) + Route 53]
+                             [Azure Application Gateway + Azure Front Door (CDN)]
                                                    │
                                                    ▼
-                                    [Application Load Balancer]
+                                         [Azure Load Balancer]
                                                    │
-                 ┌─────────────────────────────────┴─────────────────────────────────┐
-                 ▼                                                                   ▼
-    ┌──────────────────────────┐                                       ┌──────────────────────────┐
-    │  Amazon ECS (Fargate)    │                                       │   Amazon ECS (Fargate)   │
-    │  ASP.NET Core REST API   │                                       │ Node.js Event Ingest Svc │
-    └────────────┬─────────────┘                                       └────────────┬─────────────┘
-                 │                                                                  │
-                 ├─────────────────────────────────┬────────────────────────────────┘
-                 ▼                                 ▼
-    ┌──────────────────────────┐      ┌──────────────────────────┐
-    │ Amazon Aurora SQL Server │      │  Amazon ElastiCache      │
-    │ (Multi-AZ Relational DB) │      │  (Redis Managed Cluster) │
-    └──────────────────────────┘      └────────────┬─────────────┘
-                                                   │
-                                                   ▼
-                                      ┌──────────────────────────┐
-                                      │ Amazon OpenSearch Service│
-                                      │ (Managed Elasticsearch)  │
-                                      └──────────────────────────┘
+                  ┌────────────────────────────────┴────────────────────────────────┐
+                  ▼                                                                 ▼
+     ┌──────────────────────────┐                                     ┌──────────────────────────┐
+     │  Azure Container Apps    │                                     │   Azure Container Apps   │
+     │  ASP.NET Core REST API   │                                     │ Node.js Event Ingest Svc │
+     └────────────┬─────────────┘                                     └────────────┬─────────────┘
+                  │                                                                │
+                  ├────────────────────────────────┬───────────────────────────────┘
+                  ▼                                ▼
+     ┌──────────────────────────┐      ┌──────────────────────────┐
+     │  Azure SQL Database      │      │  Azure Cache for Redis   │
+     │  (Managed SQL Server)    │      │  (Managed Redis Cluster) │
+     └──────────────────────────┘      └────────────┬─────────────┘
+                                                    │
+                                                    ▼
+                                       ┌──────────────────────────┐
+                                       │  Elasticsearch on Azure  │
+                                       │  (Self-hosted or Elastic │
+                                       │   Cloud on Azure)        │
+                                       └──────────────────────────┘
 ```
 
-### AWS Cloud Primitive Mapping:
+## 14. Azure Deployment Architecture
 
-| Local Component | Target AWS Service | Rationale |
+### Azure Cloud Primitive Mapping:
+
+| Local Component | Azure Service | Rationale |
 | :--- | :--- | :--- |
-| **API & Ingestion Containers** | **Amazon ECS Fargate** | Serverless container execution; zero EC2 management; auto-scaling based on CPU/Memory |
-| **Vue 3 Frontend** | **Amazon S3 + CloudFront** | Low-latency global edge delivery; static asset hosting at micro-cost |
-| **SQL Server 2022** | **Amazon RDS / Aurora** | Automated multi-AZ failover, automated point-in-time snapshots, encrypted storage |
-| **Redis 7** | **Amazon ElastiCache for Redis** | High-availability in-memory caching with automatic replication and clustering |
-| **Elasticsearch 8.12** | **Amazon OpenSearch Service** | Fully managed search and analytics cluster with automated security patching |
-| **Logstash / Kibana** | **Amazon CloudWatch & OpenSearch Dashboards** | Native AWS observability, audit trails, and alarm monitoring |
+| **API & Ingestion Containers** | **Azure Container Apps** | Serverless container hosting with auto-scaling, built-in ingress, and managed infrastructure |
+| **Vue 3 Frontend** | **Azure Blob Storage + Azure Front Door** | Static website hosting with global CDN edge delivery and low-latency content distribution |
+| **SQL Server 2022** | **Azure SQL Database** | Fully managed SQL Server-compatible database with automated backups, geo-replication, and high availability |
+| **Redis 7** | **Azure Cache for Redis** | Managed in-memory caching with high availability, automatic patching, and cluster support |
+| **Elasticsearch 8.12** | **Elastic Cloud on Azure / Self-Hosted** | Managed Elasticsearch cluster or self-hosted on Azure VMs for search and analytics |
+| **Logstash / Kibana** | **Azure Monitor + Application Insights** | Native Azure observability, distributed tracing, and structured log analytics |
+| **Container Images** | **Azure Container Registry (ACR)** | Private container registry integrated with Azure Container Apps for image pull |
+| **Secrets & Config** | **Azure Key Vault + Azure App Configuration** | Centralized secret management and application configuration with managed identity support |
+
+### Why Azure is a Good Fit:
+
+- **No Credential Management Complexity**: Azure Managed Identity removes the need to store service credentials in environment variables for cloud-hosted components.
+- **SQL Server Compatibility**: Azure SQL Database is natively compatible with the existing EF Core + SQL Server setup — connection string change only.
+- **Container-First**: The existing `Dockerfile` per service maps directly to Azure Container Apps without modification.
+- **Environment-Based Config**: All local configuration via environment variables works identically in Azure Container Apps.
+
+## 15. Infrastructure as Code & Container Strategy
+
+The `deploy/k8s/` directory contains Kubernetes YAML manifests that represent the service topology. These are portable — they work equally well on **Azure Kubernetes Service (AKS)** as on any other Kubernetes distribution.
+
+For Azure Container Apps deployment (non-Kubernetes path), each service would require:
+1. An **Azure Container Registry** to host built images (replace `adpulse-api:latest` with `<registry>.azurecr.io/adpulse-api:latest`).
+2. An **Azure Container App** per service with environment variable bindings from Azure Key Vault.
+3. Azure SQL Database and Azure Cache for Redis replacing the Docker Compose database/cache services.
+
+> **Note:** No Azure deployment configuration is active. All services run exclusively on local Docker Compose. Azure readiness comes from stateless service design, environment-based configuration, and containerization.
 
 ---
 
@@ -611,7 +634,7 @@ Follow this structured 5-step walkthrough during your interview:
 | **2. Multi-Tenant Security** | Run `dotnet test` in terminal | *"Tenant isolation isn't an afterthought. We implement EF Core Global Query Filters at the context level. Even if a developer omits a WHERE clause, the query filter mathematically prevents data leakage."* |
 | **3. Live Traffic Ingestion** | Click "Inject Traffic" in the UI | *"Watch the live stream. Ingested events flow from Express into Redis, get batch-consumed into SQL Server, and reflect in real-time CTR and ROAS aggregations without page reload."* |
 | **4. Campaign Lifecycle** | Toggle a campaign status or create an ad group | *"Campaign state mutations update both the relational ACID database and Elasticsearch indices in parallel, keeping search queries synchronized."* |
-| **5. Cloud Roadmap Defense** | Show `deploy/k8s/` and AWS Architecture section | *"While designed local-first for zero cloud cost and offline reliability, the Docker boundaries map directly to AWS ECS Fargate, Aurora, and ElastiCache."* |
+| **5. Cloud Roadmap Defence** | Show `deploy/k8s/` and Azure Architecture section | *"While designed local-first for zero cloud cost and offline reliability, the Docker boundaries map directly to Azure Container Apps, Azure SQL Database, and Azure Cache for Redis — no re-architecture needed, just configuration changes."* |
 
 ---
 
