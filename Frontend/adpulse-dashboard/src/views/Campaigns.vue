@@ -98,22 +98,40 @@
                 :icon="row.status === 2 ? 'VideoPause' : 'VideoPlay'"
                 @click="toggleCampaignStatus(row)"
               />
-              <el-popconfirm title="Are you sure to delete this campaign?" @confirm="deleteCampaign(row.id)">
-                <template #reference>
-                  <el-button type="danger" icon="Delete" />
-                </template>
-              </el-popconfirm>
+              <el-button type="danger" icon="Delete" @click="promptDelete(row)" />
             </el-button-group>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- Delete Confirmation Modal -->
+    <el-dialog
+      v-model="deleteDialogVisible"
+      title="Delete Campaign"
+      width="420px"
+      align-center
+      :close-on-click-modal="false"
+    >
+      <div class="confirm-body">
+        <div class="confirm-icon confirm-icon--danger">
+          <el-icon><Delete /></el-icon>
+        </div>
+        <p class="confirm-text">Delete <strong>{{ pendingDeleteRow?.name }}</strong>?</p>
+        <p class="confirm-sub">This action cannot be undone. All associated ad groups, creatives, and events will be permanently removed.</p>
+      </div>
+      <template #footer>
+        <el-button @click="deleteDialogVisible = false">Cancel</el-button>
+        <el-button type="danger" :loading="deleting" @click="confirmDelete">Yes, Delete Campaign</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
+import { Delete } from '@element-plus/icons-vue';
 import { campaignsApi } from '../api/campaigns';
 import { analyticsApi } from '../api/analytics';
 import { CampaignStatusLabels, CampaignStatusTagType, CampaignObjectiveLabels } from '../types';
@@ -124,6 +142,32 @@ const loading = ref(false);
 const campaigns = ref<CampaignListDto[]>([]);
 const searchQuery = ref('');
 const selectedStatus = ref<number>(-1);
+
+// Delete modal state
+const deleteDialogVisible = ref(false);
+const deleting = ref(false);
+const pendingDeleteRow = ref<CampaignListDto | null>(null);
+
+function promptDelete(row: CampaignListDto) {
+  pendingDeleteRow.value = row;
+  deleteDialogVisible.value = true;
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteRow.value) return;
+  deleting.value = true;
+  try {
+    await campaignsApi.deleteCampaign(pendingDeleteRow.value.id);
+    campaigns.value = campaigns.value.filter((c) => c.id !== pendingDeleteRow.value!.id);
+    ElMessage.success('Campaign deleted successfully.');
+    deleteDialogVisible.value = false;
+  } catch (err: any) {
+    ElMessage.error(err.message || 'Delete failed');
+  } finally {
+    deleting.value = false;
+    pendingDeleteRow.value = null;
+  }
+}
 
 async function loadCampaigns() {
   loading.value = true;
@@ -193,16 +237,6 @@ async function toggleCampaignStatus(campaign: CampaignListDto) {
     ElMessage.success(`Campaign ${newStatus === 2 ? 'activated' : 'paused'} successfully.`);
   } catch (err: any) {
     ElMessage.error(err.message || 'Status update failed');
-  }
-}
-
-async function deleteCampaign(id: string) {
-  try {
-    await campaignsApi.deleteCampaign(id);
-    campaigns.value = campaigns.value.filter((c) => c.id !== id);
-    ElMessage.success('Campaign deleted successfully.');
-  } catch (err: any) {
-    ElMessage.error(err.message || 'Delete failed');
   }
 }
 

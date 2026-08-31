@@ -53,11 +53,7 @@
 
         <el-table-column label="Actions" width="120" fixed="right">
           <template #default="{ row }">
-            <el-popconfirm title="Are you sure to delete this audience?" @confirm="handleDelete(row.id)">
-              <template #reference>
-                <el-button type="danger" icon="Delete" size="small" />
-              </template>
-            </el-popconfirm>
+            <el-button type="danger" icon="Delete" size="small" @click="promptDeleteAudience(row)" />
           </template>
         </el-table-column>
       </el-table>
@@ -110,12 +106,33 @@
         <el-button type="primary" :loading="saving" @click="handleCreateAudience">Save Segment</el-button>
       </template>
     </el-dialog>
+    <!-- Delete Audience Confirmation Modal -->
+    <el-dialog
+      v-model="deleteAudienceVisible"
+      title="Delete Audience Segment"
+      width="420px"
+      align-center
+      :close-on-click-modal="false"
+    >
+      <div class="confirm-body">
+        <div class="confirm-icon confirm-icon--danger">
+          <el-icon><Delete /></el-icon>
+        </div>
+        <p class="confirm-text">Delete <strong>{{ pendingDeleteAudience?.name }}</strong>?</p>
+        <p class="confirm-sub">This audience segment will be permanently removed and unlinked from all campaigns.</p>
+      </div>
+      <template #footer>
+        <el-button @click="deleteAudienceVisible = false">Cancel</el-button>
+        <el-button type="danger" :loading="deletingAudience" @click="confirmDeleteAudience">Yes, Delete</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
+import { Delete } from '@element-plus/icons-vue';
 import { audiencesApi } from '../api/audiences';
 import type { AudienceDto } from '../types';
 import { formatDate } from '../utils/date';
@@ -124,6 +141,32 @@ const loading = ref(false);
 const saving = ref(false);
 const audiences = ref<AudienceDto[]>([]);
 const showCreateModal = ref(false);
+
+// Delete modal state
+const deleteAudienceVisible = ref(false);
+const deletingAudience = ref(false);
+const pendingDeleteAudience = ref<AudienceDto | null>(null);
+
+function promptDeleteAudience(row: AudienceDto) {
+  pendingDeleteAudience.value = row;
+  deleteAudienceVisible.value = true;
+}
+
+async function confirmDeleteAudience() {
+  if (!pendingDeleteAudience.value) return;
+  deletingAudience.value = true;
+  try {
+    await audiencesApi.deleteAudience(pendingDeleteAudience.value.id);
+    audiences.value = audiences.value.filter((a) => a.id !== pendingDeleteAudience.value!.id);
+    ElMessage.success('Audience segment deleted');
+    deleteAudienceVisible.value = false;
+  } catch (err: any) {
+    ElMessage.error(err.message || 'Failed to delete');
+  } finally {
+    deletingAudience.value = false;
+    pendingDeleteAudience.value = null;
+  }
+}
 
 const newAudience = reactive({
   name: '',
@@ -168,16 +211,6 @@ async function handleCreateAudience() {
     ElMessage.error(err.message || 'Failed to create audience');
   } finally {
     saving.value = false;
-  }
-}
-
-async function handleDelete(id: string) {
-  try {
-    await audiencesApi.deleteAudience(id);
-    audiences.value = audiences.value.filter((a) => a.id !== id);
-    ElMessage.success('Audience segment deleted');
-  } catch (err: any) {
-    ElMessage.error(err.message || 'Failed to delete');
   }
 }
 
